@@ -1,0 +1,4 @@
+defaults.json
+# all files in venv
+venv/
+*.ico
