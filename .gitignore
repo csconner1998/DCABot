@@ -3,3 +3,8 @@ defaults.json
 venv/
 *.ico
 .env
+log/
+DCAApp/__pycache__/
+DCAApp/migrations/
+DCAProject/__pycache__/
+DCAProject/migrations/

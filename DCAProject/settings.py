@@ -30,8 +30,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")  # Get secret key from environment variable
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    "*"
+]
 
 # Application definition
 
@@ -88,8 +89,8 @@ WSGI_APPLICATION = 'DCAProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
+        'NAME': 'dca',
+        'USER': 'csoule',
         'PASSWORD': os.getenv("DB_PASSWORD"),  # Get database password from environment variable
         'HOST': 'localhost',  # Change if your PostgreSQL instance is running on a different host
         'PORT': '',           # Default PostgreSQL port
@@ -131,6 +132,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Define the directories where Django should look for static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Include the app-specific or project-wide static directories
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
