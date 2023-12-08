@@ -14,7 +14,6 @@ import pywaves as pw
 import requests
 import csv
 
-
 # Dictionary to store user-specific threads and status flags
 bot_threads = {}
 def write_to_log_file(bot_id, user_id, text):
