@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success Page</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container justify-content-between">
+            <!-- User Information -->
+            <a href="{% url 'landing_page' %}" class="navbar-text">
+                Welcome, {{ user.username }} <!-- Replace with actual user information -->
+            </a>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a> <!-- Check Logs button -->
+                </li>
+                <li>
+                    <!-- Logout Button -->
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Invokes Stopped</h1>
+        <p class="lead">The process has been stopped successfully.</p>
+        <!-- Add any additional content here -->
+        <a href="{% url 'landing_page' %}" class="btn btn-primary mt-3">Back to Home</a>
+    </div>
+
+    <!-- Bootstrap JS CDN -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
