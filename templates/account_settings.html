@@ -65,7 +65,8 @@
                 <label for="id_email">Email:</label>
                 <input type="email" class="form-control form-control-sm custom-input-width" id="id_email" name="email" value="{{ user_form.email.value }}">
             </div>
-    
+            <button type="submit" name="user_form_submit" class="btn btn-primary btn-sm">Update Account</button>
+            <br><br
             <!-- Change Password section -->
             <h3>Change Password</h3>
             <div class="form-group">
@@ -82,7 +83,6 @@
             </div>
     
             <!-- Submit buttons -->
-            <button type="submit" name="user_form_submit" class="btn btn-primary btn-sm">Update Account</button>
             <button type="submit" name="password_form_submit" class="btn btn-primary btn-sm">Change Password</button>
         </form>
     </div>

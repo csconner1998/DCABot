@@ -55,6 +55,8 @@
                 <th>From Asset</th>
                 <th>To Asset</th>
                 <th>Amount</th>
+                <th>Blocks per Invoke</th>
+                <th>Max Invokes</th>
                 <th>Edit</th>
                 <th>Delete</th>
                 <th>Running</th>
@@ -70,6 +72,8 @@
                 <td>{{ setting.from_asset_id }}</td>
                 <td>{{ setting.to_asset_id }}</td>
                 <td>{{ setting.amount }}</td>
+                <td>{{ setting.blocks_per_invoke }}</td>
+                <td>{{ setting.max_invokes }}</td>
                 <td>
                     {% if setting.running %}
                     <a href="{% url 'edit_dca_settings' setting.id %}" class="btn btn-sm btn-info">View</a>

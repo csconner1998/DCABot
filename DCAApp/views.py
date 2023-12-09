@@ -13,6 +13,7 @@ from django.conf import settings  # Import Django settings module
 import pywaves as pw
 import requests
 import csv
+import json
 
 
 # Dictionary to store user-specific threads and status flags
@@ -113,13 +114,13 @@ def start_invokes(instance):
             raise Exception("Invalid private key")
         balance = address.balance(assetId=instance.from_asset_id)
         max_invokes = instance.max_invokes
-        while bot_threads.get(instance.id, False) and balance > 0 and int(balnace) - int(amount) > 0 and max_invokes > 0:
+        while bot_threads.get(instance.id, False) and balance > 0 and int(balance) - int(amount) > 0 and max_invokes > 0:
             # Simulate the task logic
             # write to log file
             current_height = pw.height()
             write_to_log_file(bot_id, user_id, f'current_height: {current_height} - height_snapshot: {height_snapshot} = {current_height - height_snapshot}')
-            if current_height - height_snapshot >= int(blocks_per_value):
-                params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, amount)
+            if current_height - height_snapshot >= int(instance.blocks_per_invoke):
+                params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, amount, initialEstOut)
                 if params_data is None:
                     raise Exception("Error while getting the params.")
                 returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(amount), "assetId": instance.from_asset_id}])
@@ -128,6 +129,7 @@ def start_invokes(instance):
                 write_to_log_file(bot_id, user_id, f'input_Object: {input_Object}')
                 write_to_log_file(bot_id, user_id, f'returnVal: {returnVal}')
                 max_invokes -= 1
+                height_snapshot = current_height
             balance = address.balance(assetId=instance.from_asset_id)
             time.sleep(30)
 #error
