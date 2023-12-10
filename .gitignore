@@ -3,3 +3,6 @@ defaults.json
 venv/
 *.ico
 .env
+*/__pycache__/
+*/migrations/
+log/
