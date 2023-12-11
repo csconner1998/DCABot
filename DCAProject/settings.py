@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'dca',
         'USER': 'postgres',
         'PASSWORD': os.getenv("DB_PASSWORD"),  # Get database password from environment variable
-        'HOST': 'localhost',  # Change if your PostgreSQL instance is running on a different host
+        'HOST': os.getenv("DB_HOST"),  # Change if your PostgreSQL instance is running on a different host
         'PORT': '',           # Default PostgreSQL port
     }
 }

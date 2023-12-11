@@ -6,7 +6,7 @@ from django.contrib.auth import logout, update_session_auth_hash
 import threading
 import time
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 import os
 from django.conf import settings  # Import Django settings module
@@ -18,6 +18,13 @@ import json
 
 # Dictionary to store user-specific threads and status flags
 bot_threads = {}
+assets_data = {}  # Dictionary to store ID to name mappings
+csv_file = os.path.join(settings.STATICFILES_DIRS[0], 'assets.csv')  # Use the appropriate index for your directory
+with open(csv_file, 'r') as assets_file:
+    reader = csv.DictReader(assets_file)
+    for row in reader:
+        assets_data[row['asset_id']]= row['asset_name']
+        
 def write_to_log_file(bot_id, user_id, text):
     log_file_path = os.path.join(settings.BASE_DIR, 'log', f'log{user_id}.txt')
     with open(log_file_path, 'a') as log_file:
@@ -168,14 +175,6 @@ def dca_settings_edit_empty(request):
     return redirect('view_all_dca_settings')
 @login_required
 def view_all_dca_settings(request):
-    csv_file = os.path.join(settings.STATICFILES_DIRS[0], 'assets.csv')  # Use the appropriate index for your directory
-
-    assets_data = {}  # Dictionary to store ID to name mappings
-
-    with open(csv_file, 'r') as assets_file:
-        reader = csv.DictReader(assets_file)
-        for row in reader:
-            assets_data[row['asset_id']]= row['asset_name']
     # Fetch settings for the current user ordered by ID
     settingss = DCASettings.objects.filter(user=request.user).order_by('id')
     # Replace from_asset_id and to_asset_id with corresponding names from the CSV data
@@ -317,3 +316,63 @@ def account_settings(request):
         user_form = UserChangeForm(instance=request.user)
         password_form = PasswordChangeForm(user=request.user)
     return render(request, 'account_settings.html', {'user_form': user_form, 'password_form': password_form})
+
+def get_balance(request):
+    if request.method == 'GET':
+        try:
+            address = request.GET.get('address')
+            asset_name = request.GET.get('asset_id')
+            network = request.GET.get('network')
+            
+            # turn asset_name to asset_id
+            asset_id = None
+            for key, value in assets_data.items():
+                if value == asset_name:
+                    asset_id = key
+                    break
+            if asset_id is None:
+                return JsonResponse({'error': 'Invalid asset name'}, status=400)            
+            if network == 'MainNet':
+                pw.setNode(node='https://nodes.wavesplatform.com', chain='mainnet')
+            elif network == 'TestNet':
+                pw.setNode(node='https://nodes-testnet.wavesnodes.com', chain='testnet')
+            elif network == 'stagenet':
+                pw.setNode(node='https://nodes-stagenet.wavesnodes.com', chain='stagenet')
+            else:
+                return JsonResponse({'error': 'Invalid network'}, status=400)
+            address = pw.Address(address)
+            if asset_id == 'WAVES':
+                balance = address.balance()
+            else:
+                balance = address.balance(assetId=asset_id)
+            balance = int(balance) / 10 ** get_percision(asset_id, network)
+            return JsonResponse({'balance': balance})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+def calculate_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            from_id = data.get('from_id')
+            to_id = data.get('to_id')
+            amount = data.get('amount')
+            network = data.get('network')
+            
+            amount = int(amount) * 10 ** get_percision(from_id, network)
+
+            # Construct the PuzzleSwap API URL with parameters
+            api_url = f"https://waves.puzzle-aggr-api.com/aggregator/calc?token0={from_id}&token1={to_id}&amountIn={amount}"
+
+            # Make a GET request to the PuzzleSwap API
+            response = requests.get(api_url, headers={
+                'Referer': 'https://puzzleswap.org/',
+                'Origin': 'https://puzzleswap.org/'
+            })
+            estimated_out = response.json().get('estimatedOut', 0)
+            estimated_out = int(estimated_out) / 10 ** get_percision(to_id, network)
+            return JsonResponse({'estimatedOut': estimated_out})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

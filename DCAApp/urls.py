@@ -14,4 +14,6 @@ urlpatterns = [
     path('user-output/', views.user_specific_text, name='user_specific_text'),
     path('user-output/<int:pk>', views.bot_specific_specific, name='bot_specific_specific'),
     path('account_settings/', views.account_settings, name='account_settings'),
+    path('api/calculate', views.calculate_api, name='calculate_api'),
+    path('get_balance/', views.get_balance, name='get_balance'),
 ]

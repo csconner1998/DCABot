@@ -1,3 +1,4 @@
+{% load static %}
 <!-- dca_form.html -->
 
 <!DOCTYPE html>
@@ -65,7 +66,7 @@
             <hr class="my-4">
 
             <!-- Display DCA Bot Settings Form -->
-            <form method="post" class="row">
+            <form method="post" class="row" id="DCAForm">
                 {% csrf_token %}
                 <div class="form-group col-md-3">
                     {{ form.name.label_tag }}
@@ -117,14 +118,17 @@
                 </div>
                 <!-- Add more form fields as needed -->
                 <div class="col-md-12">
+                    <div id="outputDiv"> Estimated Output: 0</div>
                     <button type="submit" name="save" class="btn btn-success float-right">Save Bot</button>
                 </div>
-            </form>
+        </form>
         </div>
     </div>
 
     <!-- Bootstrap JS CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'get_estout.js' %}"></script>
 </body>
 
 </html>
