@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Settings</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS to adjust input width */
+        .custom-input-width {
+            width: 300px; /* Set your preferred width */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container justify-content-between">
+            <!-- User Information -->
+            <a href="{% url 'view_all_dca_settings' %}" class="navbar-text">
+                Welcome, {{ user.username }} <!-- Replace with actual user information -->
+            </a>
+            <ul class="navbar-nav ml-auto">
+                <!-- If user is admin, show admin button -->
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a> <!-- Check Logs button -->
+                </li>
+                <li>
+                    <!-- Account settings button -->
+                    <a href="{% url 'account_settings' %}" class="nav-link">Account Settings</a>
+                </li>
+                <li>
+                    <!-- Logout Button -->
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h2>Edit Account</h2>
+        
+        <!-- Display success messages if any -->
+        {% for message in messages %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    
+        <form method="post">
+            {% csrf_token %}
+    
+            <!-- Username and Email fields -->
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" class="form-control form-control-sm custom-input-width" id="id_username" name="username" value="{{ user_form.username.value }}">
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                <input type="email" class="form-control form-control-sm custom-input-width" id="id_email" name="email" value="{{ user_form.email.value }}">
+            </div>
+            <button type="submit" name="user_form_submit" class="btn btn-primary btn-sm">Update Account</button>
+            <br><br
+            <!-- Change Password section -->
+            <h3>Change Password</h3>
+            <div class="form-group">
+                <label for="id_old_password">Old Password:</label>
+                <input type="password" class="form-control form-control-sm custom-input-width" id="id_old_password" name="old_password">
+            </div>
+            <div class="form-group">
+                <label for="id_new_password1">New Password:</label>
+                <input type="password" class="form-control form-control-sm custom-input-width" id="id_new_password1" name="new_password1">
+            </div>
+            <div class="form-group">
+                <label for="id_new_password2">Confirm New Password:</label>
+                <input type="password" class="form-control form-control-sm custom-input-width" id="id_new_password2" name="new_password2">
+            </div>
+    
+            <!-- Submit buttons -->
+            <button type="submit" name="password_form_submit" class="btn btn-primary btn-sm">Change Password</button>
+        </form>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    </body>
+    </html>
