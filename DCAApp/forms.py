@@ -18,3 +18,7 @@ class DCASettingsEditForm(forms.ModelForm):
         if self.instance.running:
             for field in self.fields:
                 self.fields[field].disabled = True
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    password = forms.CharField(widget=forms.PasswordInput)

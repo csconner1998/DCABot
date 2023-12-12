@@ -16,4 +16,5 @@ urlpatterns = [
     path('account_settings/', views.account_settings, name='account_settings'),
     path('api/calculate', views.calculate_api, name='calculate_api'),
     path('get_balance/', views.get_balance, name='get_balance'),
+    path('login/', views.login_view, name='login'),    
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DCASettingsEditForm, DCASettingsCreateForm
 from .models import DCASettings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout, update_session_auth_hash
+from django.contrib.auth import logout, update_session_auth_hash, authenticate, login
 import threading
 import time
 from django.contrib import messages
@@ -14,6 +14,8 @@ import pywaves as pw
 import requests
 import csv
 import json
+from .forms import LoginForm
+
 
 
 # Dictionary to store user-specific threads and status flags
@@ -376,3 +378,22 @@ def calculate_api(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('view_all_dca_settings')  # Replace 'success_page' with your success URL name
+            else:
+                error_message = "Incorrect username or password."
+                return render(request, 'login.html', {'form': form, 'error_message': error_message})
+    else:
+        form = LoginForm(initial={'username': request.POST.get('username', '')})  # Set initial username if available
+    
+    return render(request, 'login.html', {'form': form})
