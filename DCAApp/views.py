@@ -103,6 +103,8 @@ def start_invokes(instance):
     global bot_threads
     # Perform the startInvokes task here
     # This function will be run in a separate thread
+    if instance.id in bot_threads:
+        return
     try:
         if instance.network == 'MainNet':
             pw.setNode(node='https://nodes.wavesplatform.com', chain='mainnet')
