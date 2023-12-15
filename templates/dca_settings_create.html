@@ -23,41 +23,47 @@
             border-radius: 0.25rem;
             border: 1px solid #ced4da;
         }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container justify-content-between">
-            <!-- User Information -->
-            <a href="{% url 'view_all_dca_settings' %}" class="navbar-text">
-                Welcome, {{ user.username }} <!-- Replace with actual user information -->
-            </a>
+          <!-- User Information -->
+          <a href="{% url 'view_all_dca_settings' %}" class="navbar-brand">
+            Welcome, {{ user.username }} <!-- Replace with actual user information -->
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                  aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <!-- If user is admin, show admin button -->
-                {% if user.is_superuser %}
-                <li class="nav-item">
-                    <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a> <!-- Check Logs button -->
-                </li>
-                <li>
-                    <!-- Account settings button -->
-                    <a href="{% url 'account_settings' %}" class="nav-link">Account Settings</a>
-                </li>
-                <li>
-                    <!-- Logout Button -->
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
-                </li>
+              <!-- If user is admin, show admin button -->
+              {% if user.is_superuser %}
+              <li class="nav-item">
+                <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a> <!-- Check Logs button -->
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'account_settings' %}" class="nav-link">Account Settings</a> <!-- Account settings button -->
+              </li>
+              <li class="nav-item">
+                <!-- Logout Button -->
+                <a href="{% url 'logout' %}" class="nav-link text-danger">Logout</a>
+              </li>
             </ul>
-
+          </div>
         </div>
-    </nav>
+      </nav>
 
     <div class="container mt-4">
         <div class="jumbotron">
@@ -117,11 +123,21 @@
                     {{ form.network }}
                 </div>
                 <!-- Add more form fields as needed -->
-                <div class="col-md-12">
-                    <div id="outputDiv"> Estimated Output: 0</div>
-                    <button type="submit" name="save" class="btn btn-success float-right">Save Bot</button>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <div id="outputDiv"> Estimated Output: 0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-container">
+                                <button type="submit" name="save" class="btn btn-success">Save Bot</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-        </form>
+            </form>
         </div>
     </div>
 

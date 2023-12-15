@@ -23,6 +23,11 @@
             border-radius: 0.25rem;
             border: 1px solid #ced4da;
         }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 
@@ -30,31 +35,35 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container justify-content-between">
             <!-- User Information -->
-            <a href="{% url 'view_all_dca_settings' %}" class="navbar-text">
+            <a href="{% url 'view_all_dca_settings' %}" class="navbar-brand">
                 Welcome, {{ user.username }} <!-- Replace with actual user information -->
             </a>
-            <ul class="navbar-nav ml-auto">
-                {% if user.is_superuser %}
-                <li class="nav-item">
-                    <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
-                </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a> <!-- Check Logs button -->
-                </li>
-                <li>
-                    <!-- Account settings button -->
-                    <a href="{% url 'account_settings' %}" class="nav-link">Account Settings</a>
-                </li>
-                <li>
-                    <!-- Logout Button -->
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
-                </li>
-            </ul>
-
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <!-- If user is admin, show admin button -->
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a href="{% url 'user_specific_text' %}" class="nav-link">Check Logs</a>
+                        <!-- Check Logs button -->
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'account_settings' %}" class="nav-link">Account Settings</a>
+                        <!-- Account settings button -->
+                    </li>
+                    <li class="nav-item">
+                        <!-- Logout Button -->
+                        <a href="{% url 'logout' %}" class="nav-link text-danger">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -116,12 +125,25 @@
                     {{ form.network }}
                 </div>
                 <!-- Add more form fields as needed -->
-                <div class="col-md-12">
-                    <!-- If running, disable button -->
-                    <div id="outputDiv"> Estimated Output: 0</div>
-                    {% if not form.instance.running %}
-                    <button type="submit" name="save" class="btn btn-success float-right" >Save Bot</button>                
-                    {% endif %}                   
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <div id="outputDiv"> Estimated Output: 0</div>
+                            </div>
+                            <div>
+                                <div> Current Invokes: {{form.instance.current_invoke}}</div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-container">
+                                {% if not form.instance.running %}
+                                <button type="submit" name="save" class="btn btn-success">Save Bot</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
