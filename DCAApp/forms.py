@@ -5,12 +5,20 @@ class DCASettingsCreateForm(forms.ModelForm):
     class Meta:
         model = DCASettings
         exclude = ['user_id', 'running', 'user', 'current_invoke']  # Exclude 'user' field from the form
+        # Make 'private_key' field a password field but still populated by defaults
+        widgets = {
+            'private_key': forms.PasswordInput(render_value=True),
+        }
         
 
 class DCASettingsEditForm(forms.ModelForm):
     class Meta:
         model = DCASettings
         exclude = ['user_id', 'running', 'user', 'current_invoke']  # Exclude 'user' field from the form
+        # Make 'private_key' field a password field
+        widgets = {
+            'private_key': forms.PasswordInput(render_value=True),
+        }
         
     def __init__(self, *args, **kwargs):
         super(DCASettingsEditForm, self).__init__(*args, **kwargs)
