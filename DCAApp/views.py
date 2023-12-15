@@ -110,7 +110,8 @@ def start_invokes(instance):
             pw.setNode(node='https://nodes-testnet.wavesnodes.com', chain='testnet')
         elif instance.network == 'stagenet':
             pw.setNode(node='https://nodes-stagenet.wavesnodes.com', chain='stagenet')
-        height_snapshot = pw.height()
+        # set height snapshot to negative infinity
+        height_snapshot = -1 * float('inf')
         bot_id = instance.id
         user_id = instance.user.id
         instance.current_invoke = 0
