@@ -141,6 +141,7 @@ def start_invokes(instance):
                 write_to_log_file(bot_id, user_id, f'returnVal: {returnVal}')
                 max_invokes -= 1
                 instance.current_invoke += 1
+                instance.save()
                 height_snapshot = current_height
             balance = address.balance(assetId=instance.from_asset_id)
             time.sleep(30)
