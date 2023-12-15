@@ -103,8 +103,6 @@ def start_invokes(instance):
     global bot_threads
     # Perform the startInvokes task here
     # This function will be run in a separate thread
-    if instance.id in bot_threads:
-        return
     try:
         if instance.network == 'MainNet':
             pw.setNode(node='https://nodes.wavesplatform.com', chain='mainnet')
@@ -223,7 +221,7 @@ def stop_dca_settings(request, pk):
         setting.running = False
         setting.save()
         # Stop the thread with the corresponding settings ID
-        bot_threads[pk]= False
+        bot_threads.pop(pk, None)
         return redirect('view_all_dca_settings')
     
 @login_required
@@ -243,6 +241,9 @@ def start_dca_settings(request, pk):
         setting.running = True
         setting.save()
         # Create a new thread for the task
+        if pk in bot_threads:
+            print("Thread already exists")
+            return redirect('view_all_dca_settings')
         bot_threads[pk] = True
         thread = threading.Thread(target=start_invokes, args=(setting,))
         thread.start()
