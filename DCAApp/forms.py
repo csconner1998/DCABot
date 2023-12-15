@@ -4,13 +4,13 @@ from .models import DCASettings
 class DCASettingsCreateForm(forms.ModelForm):
     class Meta:
         model = DCASettings
-        exclude = ['user_id', 'running', 'user']  # Exclude 'user' field from the form
+        exclude = ['user_id', 'running', 'user', 'current_invoke']  # Exclude 'user' field from the form
         
 
 class DCASettingsEditForm(forms.ModelForm):
     class Meta:
         model = DCASettings
-        exclude = ['user_id', 'running', 'user']  # Exclude 'user' field from the form
+        exclude = ['user_id', 'running', 'user', 'current_invoke']  # Exclude 'user' field from the form
         
     def __init__(self, *args, **kwargs):
         super(DCASettingsEditForm, self).__init__(*args, **kwargs)

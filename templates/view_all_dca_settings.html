@@ -59,9 +59,10 @@
                 <th>Amount</th>
                 <th>Blocks per Invoke</th>
                 <th>Max Invokes</th>
+                <th>Running</th>
+                <th>Current Invokes</th>
                 <th>Edit</th>
                 <th>Delete</th>
-                <th>Running</th>
                 <th>Start/Stop</th>
                 <th>Logs</th>
                 <th>Balance</th>
@@ -77,6 +78,14 @@
                 <td>{{ setting.amount }}</td>
                 <td>{{ setting.blocks_per_invoke }}</td>
                 <td>{{ setting.max_invokes }}</td>
+                {% if setting.running %}
+                <!-- Show green dot centered in cell-->
+                <td class="text-center"><span class="bi bi-dot bg-success"></span></td>
+                {% else %}
+                <!-- Show red dot -->
+                <td class="text-center"><span class="bi bi-dot bg-danger"></span></td>
+                {% endif %}
+                <td>{{ setting.current_invoke }}</td>
                 <td>
                     {% if setting.running %}
                     <a href="{% url 'edit_dca_settings' setting.id %}" class="btn btn-sm btn-info">View</a>
@@ -95,13 +104,6 @@
                     </form>
                     {% endif %}
                 </td>
-                {% if setting.running %}
-                <!-- Show green dot centered in cell-->
-                <td class="text-center"><span class="bi bi-dot bg-success"></span></td>
-                {% else %}
-                <!-- Show red dot -->
-                <td class="text-center"><span class="bi bi-dot bg-danger"></span></td>
-                {% endif %}
                 <td>
                     {% if setting.running %}
                     <form action="{% url 'stop_dca_settings' setting.id %}" method="post">

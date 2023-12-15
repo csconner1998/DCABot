@@ -113,6 +113,8 @@ def start_invokes(instance):
         height_snapshot = pw.height()
         bot_id = instance.id
         user_id = instance.user.id
+        instance.current_invoke = 0
+        instance.save()
         amount = instance.amount * 10 ** get_percision(instance.from_asset_id, instance.network)
         _, estimatedOut = generateParam(instance.from_asset_id, instance.to_asset_id, amount)
         initialEstOut = int(estimatedOut) - int(int(estimatedOut) * (instance.max_difference_in_percent / 100))
@@ -138,6 +140,7 @@ def start_invokes(instance):
                 write_to_log_file(bot_id, user_id, f'input_Object: {input_Object}')
                 write_to_log_file(bot_id, user_id, f'returnVal: {returnVal}')
                 max_invokes -= 1
+                instance.current_invoke += 1
                 height_snapshot = current_height
             balance = address.balance(assetId=instance.from_asset_id)
             time.sleep(30)
@@ -157,7 +160,7 @@ def dca_settings_create(request):
         form.instance.user = request.user  # Set the current user as the owner of the settings
         form.save()
         #Redirect to edit of the settings
-        return redirect('edit_dca_settings', pk=form.instance.pk)
+        return redirect('view_all_dca_settings')
     return render(request, 'dca_settings_create.html', {'form': form})
 @login_required
 def dca_settings_edit(request, pk):
@@ -219,6 +222,7 @@ def stop_dca_settings(request, pk):
             return HttpResponse('Unauthorized', status=401)
         # If the request method is POST (from the form submission), stop the task
         setting.running = False
+        setting.current_invoke = 0
         setting.save()
         # Stop the thread with the corresponding settings ID
         bot_threads.pop(pk, None)

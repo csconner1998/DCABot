@@ -27,6 +27,7 @@ class DCASettings(models.Model):
     function_name = models.CharField(max_length=100)
     amount = models.IntegerField()
     running = models.BooleanField(default=False)  # Hidden field initially set to False
+    current_invoke = models.IntegerField(default=0)
     NETWORK_CHOICES = (
         ('MainNet', 'Main Network'),
         ('TestNet', 'Test Network'),
