@@ -130,16 +130,20 @@ def start_invokes(instance):
             # Simulate the task logic
             # write to log file
             current_height = pw.height()
-            write_to_log_file(bot_id, user_id, f'current_height: {current_height} - height_snapshot: {height_snapshot} = {current_height - height_snapshot}')
             if current_height - height_snapshot >= int(instance.blocks_per_invoke):
                 params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, amount, initialEstOut)
                 if params_data is None:
                     raise Exception("Error while getting the params.")
                 returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(amount), "assetId": instance.from_asset_id}])
                 returnVal = json.dumps(returnVal, indent=4)
-                input_Object = {"dapp_address": instance.dapp_address, "function_name": instance.function_name, "params_data": params_data, "amount": int(amount), "assetId": instance.from_asset_id}
-                write_to_log_file(bot_id, user_id, f'input_Object: {input_Object}')
-                write_to_log_file(bot_id, user_id, f'returnVal: {returnVal}')
+                # Parse json to log to file
+                if "error" in returnVal:
+                    if "message" in returnVal:
+                        write_to_log_file(bot_id, user_id, f'Invoke didn\'t go through. Reason: {returnVal["message"]}')
+                    else:
+                        write_to_log_file(bot_id, user_id, f'Invoke didn\'t go through.')
+                else:
+                    write_to_log_file(bot_id, user_id, f'Invoke went through. Tx ID: {returnVal["id"]}')
                 max_invokes -= 1
                 instance.current_invoke += 1
                 instance.save()
