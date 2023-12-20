@@ -135,7 +135,6 @@ def start_invokes(instance):
                 if params_data is None:
                     raise Exception("Error while getting the params.")
                 returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(amount), "assetId": instance.from_asset_id}])
-                returnVal = json.dumps(returnVal, indent=4)
                 # Parse json to log to file
                 if "error" in returnVal:
                     if "message" in returnVal:
