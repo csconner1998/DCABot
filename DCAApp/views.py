@@ -143,7 +143,10 @@ def start_invokes(instance):
                     else:
                         write_to_log_file(bot_id, user_id, f'Invoke didn\'t go through.')
                 else:
-                    write_to_log_file(bot_id, user_id, f'Invoke went through. Tx ID: {returnVal["id"]}')
+                    if 'id' not in returnVal:
+                        write_to_log_file(bot_id, user_id, f'Invoke went through.')
+                    else:
+                        write_to_log_file(bot_id, user_id, f'Invoke went through. Tx ID: {returnVal["id"]}')
                 max_invokes -= 1
                 instance.current_invoke += 1
                 instance.save()
