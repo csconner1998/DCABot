@@ -16,7 +16,7 @@ import requests
 import csv
 import json
 from .forms import LoginForm
-
+import math
 
 
 # Dictionary to store user-specific threads and status flags
@@ -33,6 +33,7 @@ def write_to_log_file(bot_id, user_id, text):
     with open(log_file_path, 'a') as log_file:
         log_file.write(f'{time.strftime("%d/%m/%Y - %H:%M:%S")} - Bot ID: {bot_id} - {text}\n')
 def generateParam(from_asset, to_asset, amount, minimum=0):
+    amount = int(amount)
     url = f"https://waves.puzzle-aggr-api.com/aggregator/calc?token0={from_asset}&token1={to_asset}&amountIn={amount}"
 
     payload = {}
@@ -140,16 +141,17 @@ def start_invokes(instance):
                 if random_block <= 0:
                     random_block = 1
                 random_amount = int(amount * (1+random_percent_value))
-                random_initialEstOut = int(estimatedOut * (1+random_percent_value))
+                random_initialEstOut = math.floor(estimatedOut * (1+random_percent_value))
                 write_to_log_file(bot_id, user_id, f"Random Values: {random_block} blocks, {random_amount} amount, {random_initialEstOut} initialEstOut which is {int(random_percent_value*100)}% on top of {instance.blocks_per_invoke}, {amount}, {initialEstOut}")
             
             if int(balance) - int(random_amount) < 0:
                 raise Exception("Not enough balance")
             
             if current_height - height_snapshot >= random_block:
-                params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, random_amount, random_initialEstOut)
+                params_data, curEstOut = generateParam(instance.from_asset_id, instance.to_asset_id, random_amount, random_initialEstOut)
                 if params_data is None:
                     raise Exception("Error while getting the params.")
+                write_to_log_file(bot_id, user_id, f"Invoking with lowest estimated out: {random_initialEstOut} and current estimated out: {curEstOut}")
                 returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(random_amount), "assetId": instance.from_asset_id}])
                 # Parse json to log to file
                 if "error" in returnVal:
