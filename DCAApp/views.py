@@ -33,7 +33,6 @@ def write_to_log_file(bot_id, user_id, text):
     with open(log_file_path, 'a') as log_file:
         log_file.write(f'{time.strftime("%d/%m/%Y - %H:%M:%S")} - Bot ID: {bot_id} - {text}\n')
 def generateParam(from_asset, to_asset, amount, minimum=0):
-    amount = int(amount)
     url = f"https://waves.puzzle-aggr-api.com/aggregator/calc?token0={from_asset}&token1={to_asset}&amountIn={amount}"
 
     payload = {}
@@ -395,7 +394,7 @@ def calculate_api(request):
             amount = data.get('amount')
             network = data.get('network')
             
-            amount = int(amount) * 10 ** get_percision(from_id, network)
+            amount = int(float(amount) * 10 ** get_percision(from_id, network))
 
             # Construct the PuzzleSwap API URL with parameters
             api_url = f"https://waves.puzzle-aggr-api.com/aggregator/calc?token0={from_id}&token1={to_id}&amountIn={amount}"
