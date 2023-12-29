@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DCASettingsEditForm, DCASettingsCreateForm
 from .models import DCASettings
@@ -44,11 +45,11 @@ def generateParam(from_asset, to_asset, amount, minimum=0):
     
     # Error handling
     if response.status_code != 200:
-        return
+        return None, None
     
     # Make sure response has "params" field
     if "parameters" not in response.json():
-        return
+        return None, None
     
     
     # Get parameter field of the response
@@ -116,7 +117,7 @@ def start_invokes(instance):
         user_id = instance.user.id
         instance.current_invoke = 0
         instance.save()
-        amount = instance.amount * 10 ** get_percision(instance.from_asset_id, instance.network)
+        amount = int(instance.amount * 10 ** get_percision(instance.from_asset_id, instance.network))
         _, estimatedOut = generateParam(instance.from_asset_id, instance.to_asset_id, amount)
         initialEstOut = int(estimatedOut) - int(int(estimatedOut) * (instance.max_difference_in_percent / 100))
         write_to_log_file(bot_id ,user_id, f"initialEstOut: {initialEstOut} which is {instance.max_difference_in_percent}% less than {estimatedOut}")
@@ -126,15 +127,30 @@ def start_invokes(instance):
             raise Exception("Invalid private key")
         balance = address.balance(assetId=instance.from_asset_id)
         max_invokes = instance.max_invokes
-        while bot_threads.get(instance.id, False) and balance > 0 and int(balance) - int(amount) > 0 and max_invokes > 0:
-            # Simulate the task logic
-            # write to log file
+        random_percent = instance.randomizer_value
+        random_percent_value = None
+        random_block = None
+        random_amount = None
+        random_initialEstOut = None
+        while bot_threads.get(instance.id, False) and balance > 0 and max_invokes > 0:
             current_height = pw.height()
-            if current_height - height_snapshot >= int(instance.blocks_per_invoke):
-                params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, amount, initialEstOut)
+            if random_block is None:
+                random_percent_value = random.randint(-random_percent,random_percent) / 100
+                random_block = int(instance.blocks_per_invoke * (1+random_percent_value))
+                if random_block <= 0:
+                    random_block = 1
+                random_amount = int(amount * (1+random_percent_value))
+                random_initialEstOut = int(estimatedOut * (1+random_percent_value))
+                write_to_log_file(bot_id, user_id, f"Random Values: {random_block} blocks, {random_amount} amount, {random_initialEstOut} initialEstOut which is {int(random_percent_value*100)}% on top of {instance.blocks_per_invoke}, {amount}, {initialEstOut}")
+            
+            if int(balance) - int(random_amount) < 0:
+                raise Exception("Not enough balance")
+            
+            if current_height - height_snapshot >= random_block:
+                params_data, _ = generateParam(instance.from_asset_id, instance.to_asset_id, random_amount, random_initialEstOut)
                 if params_data is None:
                     raise Exception("Error while getting the params.")
-                returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(amount), "assetId": instance.from_asset_id}])
+                returnVal = address.invokeScript(instance.dapp_address, instance.function_name, params_data, [{"amount": int(random_amount), "assetId": instance.from_asset_id}])
                 # Parse json to log to file
                 if "error" in returnVal:
                     if "message" in returnVal:
@@ -150,6 +166,7 @@ def start_invokes(instance):
                 instance.current_invoke += 1
                 instance.save()
                 height_snapshot = current_height
+                random_block = None
             balance = address.balance(assetId=instance.from_asset_id)
             time.sleep(30)
 #error

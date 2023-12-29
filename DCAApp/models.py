@@ -25,7 +25,9 @@ class DCASettings(models.Model):
     dapp_address = models.CharField(max_length=100)
     max_difference = models.IntegerField(name='max_difference_in_percent')
     function_name = models.CharField(max_length=100)
-    amount = models.IntegerField()
+    # Make sure the randomizer value is not negative
+    randomizer_value = models.IntegerField(default=0)
+    amount = models.FloatField()
     running = models.BooleanField(default=False)  # Hidden field initially set to False
     current_invoke = models.IntegerField(default=0)
     NETWORK_CHOICES = (
@@ -41,4 +43,7 @@ class DCASettings(models.Model):
     
     def save(self, *args, **kwargs):
         self.full_clean()  # Validate model fields before saving
+        # Make sure the randomizer value is between 0 and 100
+        if self.randomizer_value < 0 or self.randomizer_value > 100:
+            self.randomizer_value = 0
         super().save(*args, **kwargs)
