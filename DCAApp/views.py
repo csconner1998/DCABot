@@ -141,7 +141,7 @@ def start_invokes(instance):
                 if random_block <= 0:
                     random_block = 1
                 random_amount = int(amount * (1+random_percent_value))
-                random_initialEstOut = int(estimatedOut * (1+random_percent_value))
+                random_initialEstOut = int(initialEstOut * (1+random_percent_value))
                 write_to_log_file(bot_id, user_id, f"Random Values: {random_block} blocks, {random_amount} amount, {random_initialEstOut} initialEstOut which is {int(random_percent_value*100)}% on top of {instance.blocks_per_invoke}, {amount}, {initialEstOut}")
             
             if int(balance) - int(random_amount) < 0:
